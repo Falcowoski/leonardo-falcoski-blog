@@ -1,10 +1,11 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
 import PageLayout from "@layouts/PageLayout.astro";
-import Container from "@components/Container.astro";
 import FormattedDate from "@components/FormattedDate.astro";
 import { readingTime } from "@lib/utils";
 import BackToPrev from "@components/BackToPrev.astro";
+import ArticleSectionVisibilityObserver from "@altano/astro-table-of-contents/ArticleSectionVisibilityObserver.astro";
+import TableOfContentsWithScrollSpy from "@altano/astro-table-of-contents/TableOfContentsWithScrollSpy.astro";
 
 export async function getStaticPaths() {
   const posts = (await getCollection("blog"))
@@ -18,14 +19,14 @@ export async function getStaticPaths() {
 type Props = CollectionEntry<"blog">;
 
 const post = Astro.props;
-const { Content } = await post.render();
+const { Content, headings } = await post.render();
 ---
 
 <PageLayout title={post.data.title} description={post.data.description}>
-  <Container>
+  <div class="mx-auto max-w-screen-sm px-5 lg:max-w-screen-lg">
     <div class="animate">
       <BackToPrev href="/blog">
-        Back to blog
+        Voltar ao blog
       </BackToPrev>
     </div>
     <div class="space-y-1 my-10">
@@ -42,8 +43,91 @@ const { Content } = await post.render();
         {post.data.title}
       </div>
     </div>
-    <article class="animate">
-      <Content />
-    </article>
-  </Container>
+    <div class="lg:flex lg:gap-12">
+      <ArticleSectionVisibilityObserver>
+        <article class="animate lg:flex-1 lg:min-w-0">
+          <Content />
+        </article>
+      </ArticleSectionVisibilityObserver>
+      {headings.length > 0 && (
+        <aside class="toc-sidebar hidden lg:block lg:w-56 lg:flex-shrink-0">
+          <nav class="toc-nav sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
+            <p class="text-xs font-semibold uppercase tracking-wider text-black/40 dark:text-white/40 mb-3">
+              Neste artigo
+            </p>
+            <TableOfContentsWithScrollSpy
+              headings={headings}
+              class="toc-list"
+              fromDepth={2}
+              toDepth={4}
+            />
+          </nav>
+        </aside>
+      )}
+    </div>
+  </div>
 </PageLayout>
+
+<style is:global>
+  .toc-nav {
+    scrollbar-width: none;
+  }
+  .toc-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .toc-list ul {
+    list-style: none;
+    padding-left: 0.75rem;
+    margin: 0;
+  }
+
+  .toc-list li {
+    margin: 0;
+  }
+
+  .toc-list a {
+    display: block;
+    position: relative;
+    padding: 0.2rem 0 0.2rem 0.5rem;
+    color: inherit;
+    text-decoration: none;
+    opacity: 0.4;
+    transition: opacity 0.2s ease, color 0.2s ease;
+  }
+
+  .toc-list a[aria-current="true"]::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 60%;
+    background: currentColor;
+  }
+
+  .toc-list a:hover {
+    opacity: 0.7;
+  }
+
+  .toc-list a[aria-current="true"] {
+    opacity: 1;
+  }
+
+  html:not(.dark) .toc-list a[aria-current="true"] {
+    color: black;
+  }
+
+  html.dark .toc-list a[aria-current="true"] {
+    color: white;
+  }
+</style>
