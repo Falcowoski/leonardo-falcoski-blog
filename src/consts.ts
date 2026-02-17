@@ -18,15 +18,6 @@ export const BLOG: Metadata = {
   DESCRIPTION: "Artigos sobre tecnologia, desenvolvimento e aprendizados.",
 };
 
-export const WORK: Metadata = {
-  TITLE: "Trabalho",
-  DESCRIPTION: "Experiência profissional e trajetória.",
-};
-
-export const PROJECTS: Metadata = {
-  TITLE: "Projetos",
-  DESCRIPTION: "Projetos pessoais e open source.",
-};
 
 export const SOCIALS: Socials = [
   {
