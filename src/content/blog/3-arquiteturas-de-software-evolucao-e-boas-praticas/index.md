@@ -3,7 +3,6 @@ title: "Arquiteturas de software: evolução e boas práticas"
 description: "Este artigo explora como arquiteturas evoluem naturalmente, usando exemplos práticos de back-end e front-end."
 date: "2026/02/15"
 ---
-arquiteturas-de-software-evolucao-e-boas-praticas
 
 Arquitetura de software não é receita pronta. É um conjunto de decisões que evolui conforme as necessidades do seu projeto.
 
