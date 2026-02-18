@@ -2,6 +2,7 @@
 title: "Introdução ao Linux: por que você deveria experimentar"
 description: "Um guia para quem está começando no mundo Linux, cobrindo distribuições, terminal e dicas práticas."
 date: "Feb 10 2026"
+draft: true
 ---
 
 O Linux é um sistema operacional que abre portas para quem quer entender como computadores realmente funcionam. Neste artigo, vamos explorar os fundamentos e por que vale a pena investir tempo nele.

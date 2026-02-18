@@ -2,6 +2,7 @@
 title: "Configurando um ambiente de desenvolvimento no macOS"
 description: "Passo a passo para montar um ambiente de dev moderno no Mac, do Homebrew ao editor de código."
 date: "Feb 15 2026"
+draft: true
 ---
 
 Montar um ambiente de desenvolvimento no macOS pode parecer intimidante, especialmente se você vem do Windows ou Linux. Mas com as ferramentas certas, o processo é direto e o resultado é um setup produtivo.
