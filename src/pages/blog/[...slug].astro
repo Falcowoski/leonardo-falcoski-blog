@@ -4,8 +4,7 @@ import PageLayout from "@layouts/PageLayout.astro";
 import FormattedDate from "@components/FormattedDate.astro";
 import { readingTime } from "@lib/utils";
 import BackToPrev from "@components/BackToPrev.astro";
-import ArticleSectionVisibilityObserver from "@altano/astro-table-of-contents/ArticleSectionVisibilityObserver.astro";
-import TableOfContentsWithScrollSpy from "@altano/astro-table-of-contents/TableOfContentsWithScrollSpy.astro";
+import TableOfContents from "@altano/astro-table-of-contents/TableOfContents.astro";
 
 export async function getStaticPaths() {
   const posts = (await getCollection("blog"))
@@ -44,18 +43,16 @@ const { Content, headings } = await post.render();
       </div>
     </div>
     <div class="lg:flex lg:gap-12">
-      <ArticleSectionVisibilityObserver>
-        <article class="animate lg:flex-1 lg:min-w-0">
-          <Content />
-        </article>
-      </ArticleSectionVisibilityObserver>
+      <article class="animate lg:flex-1 lg:min-w-0">
+        <Content />
+      </article>
       {headings.length > 0 && (
         <aside class="toc-sidebar hidden lg:block lg:w-56 lg:flex-shrink-0">
           <nav class="toc-nav sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
             <p class="text-xs font-semibold uppercase tracking-wider text-black/40 dark:text-white/40 mb-3">
               Neste artigo
             </p>
-            <TableOfContentsWithScrollSpy
+            <TableOfContents
               headings={headings}
               class="toc-list"
               fromDepth={2}
@@ -67,6 +64,57 @@ const { Content, headings } = await post.render();
     </div>
   </div>
 </PageLayout>
+
+<script>
+  const headings = Array.from(
+    document.querySelectorAll("article :is(h2, h3, h4)[id]")
+  );
+
+  const visibleHeadings = new Set();
+  let lastExited = null;
+
+  function updateActive() {
+    document.querySelectorAll(".toc-list a[aria-current]").forEach((a) => {
+      a.removeAttribute("aria-current");
+    });
+
+    let active = null;
+
+    if (visibleHeadings.size > 0) {
+      active = Array.from(visibleHeadings).reduce((best, h) =>
+        h.getBoundingClientRect().top < best.getBoundingClientRect().top ? h : best
+      );
+    } else if (lastExited !== null) {
+      active = lastExited;
+    }
+
+    if (active === null) return;
+
+    const id = active.getAttribute("id");
+    if (id === null) return;
+
+    document.querySelectorAll(`.toc-list a[href="#${id}"]`).forEach((a) => {
+      a.setAttribute("aria-current", "true");
+    });
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        visibleHeadings.add(entry.target);
+      } else {
+        if (entry.boundingClientRect.top < 0) {
+          lastExited = entry.target;
+        }
+        visibleHeadings.delete(entry.target);
+      }
+    });
+
+    updateActive();
+  });
+
+  headings.forEach((h) => observer.observe(h));
+</script>
 
 <style is:global>
   .toc-nav {
